@@ -250,3 +250,27 @@ flamegraph.pl Stacktrace.folded > Stacktrace.svg
 ```
 
 Note that it is required to enable stacktrace sampling, in order to generate flamegraph. To enable it, please set `sampleInterval` parameter. If it is not set or zero, the profiler will not do stacktrace sampling.
+
+
+### Deploy:
+Update your ~/.m2/settings.yml
+```
+<settings>
+  <servers>
+    <server>
+      <id>maven-4p</id>
+      <username>...</username>
+      <password>...</password>
+      <configuration>
+        <region>us-east-1</region>
+        <publicRepository>false</publicRepository>
+      </configuration>
+    </server>
+  </servers>
+</settings>
+```
+
+Run this command at the root project
+```
+mvn deploy -pl com.azure:azure-storage-blob -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -DskipTests
+```
