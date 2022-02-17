@@ -5,7 +5,7 @@
     <groupId>com.uber</groupId>
     <artifactId>jvm-profiler</artifactId>
     <!-- Please update AgentImpl.VERSION as well for same version -->
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
     <name>uber-jvm-profiler</name>
@@ -30,6 +30,17 @@
             <url>http://scala-tools.org/repo-releases</url>
         </repository>
     </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>maven-4p</id>
+            <url>s3://4p-maven/snapshots</url>
+        </repository>
+        <snapshotRepository>
+            <id>maven-4p</id>
+            <url>s3://4p-maven/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -74,6 +85,18 @@
             <version>4.3.6</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>2.7.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-azure</artifactId>
+            <version>2.7.3</version>
+        </dependency>
+
         <!--Test-->
         <dependency>
             <groupId>junit</groupId>
@@ -90,6 +113,14 @@
                 <directory>src/main/resources</directory>
             </resource>
         </resources>
+
+        <extensions>
+            <extension>
+                <groupId>com.gkatzioura.maven.cloud</groupId>
+                <artifactId>s3-storage-wagon</artifactId>
+                <version>1.8</version>
+            </extension>
+        </extensions>
 
         <plugins>
             <plugin>
@@ -235,6 +266,10 @@
                                 <relocation>
                                     <pattern>okio</pattern>
                                     <shadedPattern>ujagent_shaded.okio</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.hadoop</pattern>
+                                    <shadedPattern>ujagent_shaded.org.apache.hadoop</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>
