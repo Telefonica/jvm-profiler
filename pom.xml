@@ -19,6 +19,17 @@
         </license>
     </licenses>
 
+    <distributionManagement>
+        <repository>
+            <id>maven-4p</id>
+            <url>s3://4p-maven/snapshots</url>
+        </repository>
+        <snapshotRepository>
+            <id>maven-4p</id>
+            <url>s3://4p-maven/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <properties>
         <encoding>UTF-8</encoding>
     </properties>
@@ -90,6 +101,14 @@
                 <directory>src/main/resources</directory>
             </resource>
         </resources>
+
+        <extensions>
+            <extension>
+                <groupId>com.gkatzioura.maven.cloud</groupId>
+                <artifactId>s3-storage-wagon</artifactId>
+                <version>1.8</version>
+            </extension>
+        </extensions>
 
         <plugins>
             <plugin>
