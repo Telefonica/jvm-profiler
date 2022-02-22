@@ -42,17 +42,6 @@
         </repository>
     </repositories>
 
-    <distributionManagement>
-        <repository>
-            <id>maven-4p</id>
-            <url>s3://4p-maven/snapshots</url>
-        </repository>
-        <snapshotRepository>
-            <id>maven-4p</id>
-            <url>s3://4p-maven/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.kafka</groupId>
