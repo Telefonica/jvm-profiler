@@ -41,7 +41,8 @@ public class HDFSOutputReporter implements Reporter {
 
         try {
             outputBasePath = new Path(URI.create(outputPath));
-            hdfs = FileSystem.get(outputBasePath.toUri(), buildFileSystemConfiguration(parsedArgs));
+            Configuration hdfsConfig = buildFileSystemConfiguration(parsedArgs);
+            hdfs = FileSystem.get(outputBasePath.toUri(), hdfsConfig);
             String mode = ArgumentUtils.getArgumentSingleValue(parsedArgs, ARG_MODE);
             if (ArgumentUtils.needToUpdateArg(mode) && mode.equalsIgnoreCase("overwrite")) {
                 hdfs.delete(outputBasePath, true);
@@ -67,16 +68,21 @@ public class HDFSOutputReporter implements Reporter {
 
     @Override
     public void close() {
-        try {
-            for (Pair<Path, FSDataOutputStream> writer : writers.values()) {
-                writer.getRight().flush();
-                writer.getRight().close();
+        synchronized (this) {
+            try {
+                for (Pair<Path, FSDataOutputStream> writer : writers.values()) {
+                    writer.getRight().flush();
+                    writer.getRight().close();
+                }
+                hdfs.close();
+                hdfs = null;
+                writers = new HashMap<>();
+                closed = true;
+            } catch (IOException e) {
+                logger.warn("Unable to close HDFS jvm-profiler reporter", e);
             }
-            hdfs.close();
-            closed = true;
-        } catch (IOException e) {
-            logger.warn("Unable to close HDFS jvm-profiler reporter", e);
         }
+
     }
 
     private Configuration buildFileSystemConfiguration(Map<String, List<String>> parsedArgs) {
@@ -84,6 +90,8 @@ public class HDFSOutputReporter implements Reporter {
 
         String wasbAccount = ArgumentUtils.getArgumentSingleValue(parsedArgs, ARG_WASB_ACCOUNT_PATH);
         String wasbKey = ArgumentUtils.getArgumentSingleValue(parsedArgs, ARG_WASB_KEY_PATH);
+        configuration.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        configuration.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
         if (ArgumentUtils.needToUpdateArg(wasbAccount) && ArgumentUtils.needToUpdateArg(wasbKey)) {
             configuration.set("fs.wasb.impl", "org.apache.hadoop.fs.azure.NativeAzureFileSystem");
             configuration.set("fs.wasbs.impl", "org.apache.hadoop.fs.azure.NativeAzureFileSystem$Secure");

@@ -91,7 +91,7 @@ public class Arguments {
 
         Map<String, List<String>> map = new HashMap<>();
         for (String argPair : args.split(",")) {
-            String[] strs = argPair.split("=");
+            String[] strs = argPair.split("=", 2);
             if (strs.length != 2) {
                 throw new IllegalArgumentException("Arguments for the agent should be like: key1=value1,key2=value2");
             }
